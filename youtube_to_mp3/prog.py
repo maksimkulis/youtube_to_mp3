@@ -1,14 +1,17 @@
-import pytube
 import os
-from moviepy.editor import *
+import youtube_dl
 
-video_url = input("Write the youtube video url: ")
+from moviepy.editor import VideoFileClip
 
-youtube = pytube.YouTube(video_url)
-video = youtube.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().last()
-title = video.download(filename='tmp')
-os.chmod(title, 777)
+video_title = "tmp"
 
-video = VideoFileClip(title)
+ydl_opts = {
+    'outtmpl': os.path.join(os.getcwd(), video_title),
+}
+with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+    ydl.download([input("Write the youtube video url: ")])
+
+os.chmod(video_title, 777)
+video = VideoFileClip(video_title)
 video.audio.write_audiofile(os.path.join(os.getcwd(), "music.mp3"))
-os.remove(title)
+os.remove(video_title)
